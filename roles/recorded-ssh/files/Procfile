@@ -1,0 +1,2 @@
+sshfront: sshfront -a=/usr/local/bin/auth-handler -p=2222 /usr/local/bin/ssh-handler
+watchmedo: watchmedo shell-command --pattern="*.log" --drop --ignore-directories --recursive --wait --command='if test "${watch_event_type}" = "modified"; then sleep 1; asciinema upload "${watch_src_path}"; fi' /var/log/asciinema

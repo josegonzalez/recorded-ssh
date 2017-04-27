@@ -1,0 +1,2 @@
+[api]
+token = {{ recorded_ssh_asciinema_token }}

@@ -1,0 +1,13 @@
+---
+- set_fact:
+    "{{ item.key }}":"{{ item.val | }}"
+  with_items:
+    recorded_ssh_asciinema_token: {{ ASCIINEMA_TOKEN | default('') }}
+    recorded_ssh_github_org: {{ GITHUB_ORG | default('') }}
+    recorded_ssh_github_teams: {{ GITHUB_TEAMS | default('') }}
+    recorded_ssh_github_token: {{ GITHUB_TOKEN | default('') }}
+
+- include: asciinema.yml
+- include: forego.yml
+- include: sshfront.yml
+- include: procfile.yml

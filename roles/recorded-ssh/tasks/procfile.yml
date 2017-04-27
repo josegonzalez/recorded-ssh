@@ -1,0 +1,8 @@
+---
+- name: copy Procfile into place
+  copy:
+    src: Procfile}
+    dest: /app/Procfile
+    owner: root
+    group: root
+    mode: 0755

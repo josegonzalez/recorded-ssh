@@ -1,0 +1,4 @@
+[auth-handler]
+org = {{ recored_ssh_github_org }}
+teams = {{ recored_ssh_github_teams }}
+token = {{ recored_ssh_github_token }}

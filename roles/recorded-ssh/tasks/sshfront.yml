@@ -1,0 +1,60 @@
+---
+- name: download sshfront
+  get_url:
+    url: https://github.com/gliderlabs/sshfront/releases/download/v0.2.1/sshfront_0.2.1_Linux_x86_64.tgz
+    dest: /tmp/sshfront_0.2.1_Linux_x86_64.tgz
+
+- name: unzip sshfront
+  unarchive:
+    src: /tmp/sshfront_0.2.1_Linux_x86_64.tgz
+    dest: /usr/local/bin
+    copy: no
+
+- name: copy handlers into place
+  copy:
+    src: {{ item }}
+    dest: /usr/local/bin/{{ item }}
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+  - auth-handler
+  - record-handler
+
+- name: write auth-handler config
+  template:
+    src: auth-handler
+    dest: /root/.config/auth-handler/config
+    owner: root
+    group: root
+    mode: 0644
+
+- name: install shhfront handler dependencies
+  apt:
+    name: {{ item }}
+  with_items:
+  - libssl-dev
+  - python-dev
+  - python-cryptography
+  - python-pip
+  - python-virtualenv
+
+
+- name: create sshfront-handler virtualenv directory
+  file:
+    path: /usr/local/virtualenv/sshfront-handler
+    state: directory
+    mode: 0755
+
+- name: copy handlers into place
+  copy:
+    src: requirements.txt
+    dest: /usr/local/virtualenv/sshfront-handler/requirements.txt
+    owner: root
+    group: root
+    mode: 0755
+
+- name: initialize virtualenv
+  pip:
+    virtualenv: /usr/local/virtualenv/sshfront-handler
+    requirements: /usr/local/virtualenv/sshfront-handler/requirements.txt

@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -eo pipefail
+shopt -s nullglob
+
+main() {
+  local CURRENT_TIMESTAMP IP_ADDRESS LOGDIR LOGFILE RANDOM_NUMBER START_TIME
+  CURRENT_TIMESTAMP="$(date +"%s")"
+  IP_ADDRESS="$(echo $SSH_CLIENT | cut -f1 -d' ')"
+  LOGDIR="/var/log/asciinema/$(whoami)/$(date '+%Y-%m-%d')"
+  RANDOM_NUMBER="$(shuf -i 1000-10000 -n 1)"
+  START_TIME="$(date '+%H%M')"
+
+  mkdir -p "$LOGDIR"
+  LOGFILE="${LOGDIR}/${IP_ADDRESS}-${START_TIME}-${RANDOM_NUMBER}.log"
+
+  pushd "$HOME" > /dev/null
+  [[ -z "$ASCIINEMA_REC" ]] && exec "$(which asciinema)" rec -t "ssh $(whoami)@${IP_ADDRESS} ${CURRENT_TIMESTAMP}" -w 3 -y "${LOGFILE}" -q
+  popd > /dev/null
+}
+
+main "$@"

@@ -1,0 +1,78 @@
+#!/usr/local/virtualenv/asciinema/bin/python
+import ConfigParser
+import github3
+import os
+import sys
+
+import logging
+logger = logging.getLogger('auth-handler')
+hdlr = logging.FileHandler('/var/log/recorded-ssh.log')
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+hdlr.setFormatter(formatter)
+logger.addHandler(hdlr) 
+logger.setLevel(logging.INFO)
+
+
+def configuration():
+    paths = []
+    if os.getenv('AUTH_HANDLER_CONFIG_HOME'):
+        paths.append(os.path.join(os.getenv('AUTH_HANDLER_CONFIG_HOME'), 'config'))
+
+    if os.getenv('XDG_CONFIG_HOME'):
+        paths.append(os.path.join(os.getenv('XDG_CONFIG_HOME'), 'auth-handler', 'config'))
+    paths.append(os.path.expanduser('~/.config/auth-handler/config'))
+    paths.append(os.path.expanduser('~/.auth-handler/config'))
+    parser = ConfigParser.RawConfigParser()
+    parser.read(paths)
+
+    config = {'org': None, 'team': None, 'token': None}
+    for key, value in config.items():
+      if parser.has_option('auth-handler', key):
+            config[key] = parser.get('auth-handler', key)
+
+    return config
+
+
+def log_fail(message):
+    logger.info(message)
+    sys.exit(255)
+
+
+def main(username, key_contents):
+    ip_address = os.getenv('SSH_CONNECTION').split(' ')[0]
+    config = configuration()
+
+    g = github3.login(token=config['token'])
+    organization = g.organization(config['org'])
+    if not organization:
+        log_fail('Invalid user {0} from {1} (invalid org)'.format(username, ip_address))
+
+    teams = organization.teams()
+    valid_teams = config['team'].split(',')
+    teams = [t for t in teams if t.name in valid_teams]
+    if len(teams) == 0:
+        log_fail('Invalid user {0} from {1} (invalid team).'.format(username, ip_address))
+
+    for team in teams:
+        users = [u for u in team.members() if u.login == username]
+        user = next(iter(users or []), None)
+        if user:
+            break
+
+    if not user:
+        log_fail('Invalid user {0} from {1} (not in teams).'.format(username, ip_address))
+
+    keys = [k for k in user.keys() if k.key == key_contents]
+    key = next(iter(keys or []), None)
+    if not key:
+        log_fail('Invalid user {0} from {1} (publickey for real).'.format(username, ip_address))
+
+    logger.info('Valid user {0} from {1} (matching key)'.format(username, ip_address))
+
+
+if __name__ == '__main__':
+    ip_address = os.getenv('SSH_CONNECTION').split(' ')[0]
+    if len(sys.argv) != 3:
+        log_fail('Invalid user from {0} (none specified).'.format(ip_address))
+
+    main(sys.argv[1], sys.argv[2])

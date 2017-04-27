@@ -1,0 +1,20 @@
+---
+- name: add asciinema repo
+  apt_repository:
+    repo: 'ppa:zanchey/asciinema'
+
+- name: update apt-get
+  apt:
+    update_cache: yes
+
+- name: install asciinema
+  apt:
+    name: asciinema
+
+- name: write asciinema config
+  template:
+    src: asciinema
+    dest: /root/.config/asciinema/config
+    owner: root
+    group: root
+    mode: 0644

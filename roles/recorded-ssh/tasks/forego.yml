@@ -1,0 +1,10 @@
+- name: download forego
+  get_url:
+    url: https://bin.equinox.io/c/ekMN3bCZFUn/forego-stable-linux-amd64.tgz
+    dest: /tmp/forego-stable-linux-amd64.tgz
+
+- name: unzip forego
+  unarchive:
+    src: /tmp/forego-stable-linux-amd64.tgz
+    dest: /usr/local/bin
+    copy: no
