@@ -12,10 +12,10 @@ packaging==16.8
 pathtools==0.1.2
 pyasn1==0.2.3
 pycparser==2.17
-pyOpenSSL==17.0.0
+pyOpenSSL==17.5.0
 pyparsing==2.2.0
 PyYAML==3.12
-requests==2.13.0
+requests==2.20.0
 six==1.10.0
 uritemplate==3.0.0
 uritemplate.py==3.0.2
