@@ -15,7 +15,7 @@ pycparser==2.19
 pyOpenSSL==18.0.0
 pyparsing==2.3.0
 PyYAML==5.4
-requests==2.20.0
+requests==2.31.0
 six==1.11.0
 uritemplate==3.0.0
 uritemplate.py==3.0.2
