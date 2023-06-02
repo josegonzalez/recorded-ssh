@@ -2,7 +2,7 @@ appdirs==1.4.3
 argh==0.26.2
 asn1crypto==0.24.0
 cffi==1.11.5
-cryptography==39.0.1
+cryptography==41.0.0
 enum34==1.1.6
 github3.py==1.2.0
 idna==2.7
